@@ -1,22 +1,15 @@
 #!/usr/bin/env python3
-
 """
-import other files here
+Import other corresponding files here
 """
 import redis
 import requests
 from functools import wraps
 from typing import Callable
 
-"""
-write the python class
-"""
 
 redis_store = redis.Redis()
 
-"""
-define the object here
-"""
 
 def data_cacher(method: Callable) -> Callable:
     @wraps(method)
