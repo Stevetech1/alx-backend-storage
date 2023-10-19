@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 """
-Import other corresponding files here
+Task: Advance Task
 """
 import redis
 import requests
 from functools import wraps
 from typing import Callable
 
-
-redis_store = redis.Redis()
-
+# Initialize a Redis connection
+redis_store = redis.Redis(host='localhost', port=6379, db=0)
 
 def data_cacher(method: Callable) -> Callable:
     @wraps(method)
@@ -19,12 +18,18 @@ def data_cacher(method: Callable) -> Callable:
         if result:
             return result.decode('utf-8')
         result = method(url)
-        redis_store.set(f'count:{url}', 0)
+        # Set cache with a 10-second expiration
         redis_store.setex(f'result:{url}', 10, result)
         return result
-    return invoker
 
+    return invoker
 
 @data_cacher
 def get_page(url: str) -> str:
     return requests.get(url).text
+
+if __name__ == "__main__":
+    # Example usage
+    page_content = get_page('http://slowwly.robertomurray.co.uk/delay/10000/url/http://www.example.com')
+    print(page_content)
+
